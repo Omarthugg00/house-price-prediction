@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>House Price Prediction</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f7f7f7;
+            font-family: 'Poppins', sans-serif;
+            color: #333;
+            margin: 0;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 600px;
+            background-color: white;
+            padding: 2rem;
+            margin: auto;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        }
+
+        h2 {
+            text-align: center;
+            color: #E7814D;
+            margin-bottom: 2rem;
+        }
+
+        label {
+            display: block;
+            margin: 1rem 0 0.5rem;
+            font-weight: 500;
+        }
+
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 0.6rem;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            background-color: #E7814D;
+            color: black;
+            border: none;
+            padding: 0.8rem 1.2rem;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 2rem;
+            width: 100%;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #ff9a60;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🏡 House Price Prediction</h2>
+        <form action="/predict" method="post">
+            {% for key, label in features.items() %}
+                <label for="{{ key }}">{{ label }}</label>
+                {% if key == 'Neighborhood' %}
+                    <select name="{{ key }}" required>
+                        {% for name, code in neighborhoods.items() %}
+                            <option value="{{ name }}">{{ name }}</option>
+                        {% endfor %}
+                    </select>
+                {% else %}
+                    <input type="number" name="{{ key }}" step="any" required>
+                {% endif %}
+            {% endfor %}
+            <input type="submit" value="Predict Sale Price">
+        </form>
+    </div>
+</body>
+</html>

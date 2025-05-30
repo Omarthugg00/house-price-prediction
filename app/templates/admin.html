@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8f8f8;
+      color: #222;
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 2rem;
+    }
+
+    h1 {
+      text-align: center;
+      color: #E7814D;
+      margin-bottom: 2rem;
+    }
+
+    .dashboard-container {
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .charts {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    @media (min-width: 768px) {
+      .charts {
+        flex-direction: row;
+        justify-content: space-between;
+      }
+    }
+
+    canvas {
+      background-color: white;
+      border-radius: 8px;
+      padding: 1rem;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      max-width: 100%;
+    }
+
+    #pieChart {
+      max-width: 500px;
+      max-height: 300px;
+      margin: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: white;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 2rem;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #E7814D;
+      color: black;
+    }
+
+    tr:hover {
+      background-color: #f0f0f0;
+    }
+
+    p.no-data {
+      text-align: center;
+      margin-top: 2rem;
+      font-style: italic;
+      color: #999;
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <h1>Admin Dashboard</h1>
+
+    <div class="charts">
+      <canvas id="priceChart" height="250"></canvas>
+      <canvas id="pieChart" height="250"></canvas>
+    </div>
+
+    {% if records %}
+      <table>
+        <thead>
+          <tr>
+            {% for col in columns %}
+              <th>{{ col }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in records %}
+            <tr>
+              {% for val in row.values() %}
+                <td>{{ val }}</td>
+              {% endfor %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="no-data">No prediction records found.</p>
+    {% endif %}
+  </div>
+
+  <script>
+    const ctx = document.getElementById("priceChart").getContext("2d");
+    const chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: {{ chart_labels|tojson }},
+        datasets: [{
+          label: 'Average Predicted Price',
+          data: {{ chart_values|tojson }},
+          borderColor: '#E7814D',
+          backgroundColor: 'rgba(231,129,77,0.1)',
+          fill: true,
+          tension: 0.3
+        }]
+      },
+      options: {
+        plugins: {
+          legend: { labels: { color: '#333' }}
+        },
+        scales: {
+          x: { ticks: { color: '#333' }},
+          y: { ticks: { color: '#333' }}
+        }
+      }
+    });
+
+    const pieCtx = document.getElementById("pieChart").getContext("2d");
+    const pieChart = new Chart(pieCtx, {
+      type: 'pie',
+      data: {
+        labels: {{ pie_labels|tojson }},
+        datasets: [{
+          data: {{ pie_values|tojson }},
+          backgroundColor: [
+            '#E7814D', '#FF9F40', '#FFCD56', '#4BC0C0',
+            '#36A2EB', '#9966FF', '#FF6384', '#C9CBCF'
+          ]
+        }]
+      },
+      options: {
+        plugins: {
+          legend: {
+            labels: { color: '#333' }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
